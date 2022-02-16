@@ -121,8 +121,9 @@ bool kp_8 = false;
 bool kp_9 = false;
 
 bool kp_10 = false;
-    bool kp_10a = false;
+    bool winMicMute = false;
 bool kp_11 = false;
+    bool winVidMute = false;
 bool kp_12 = false;
 bool kp_13 = false;
 bool kp_14 = false;
@@ -159,7 +160,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }   else if (micMute == true) {
                     micMute = false;
                     tap_code16(LSFT(LGUI(KC_A)));
-                    rgblight_setrgb(RGB_ORANGE);
+                    rgblight_setrgb_at(RGB_ORANGE,2);
                 };
         };
         break;
@@ -171,16 +172,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (vidMute == false) {
                 vidMute = true;
                 tap_code16(LSFT(LGUI(KC_V)));
-                //rgblight_setrgb_range(62, 103, 168, 0, 9);
-                rgblight_setrgb_at(62, 103, 168, 1);
-            }   else if (vidMute == true) {
+                rgblight_setrgb_at(RGB_RED, 1);
+            } else if (vidMute == true) {
                 vidMute = false;
                 tap_code16(LSFT(LGUI(KC_V)));
-                if (micMute) {
-                    rgblight_setrgb(RGB_ORANGE);
-                } else {
-                    rgblight_setrgb(RGB_RED);
-                }
+                rgblight_setrgb_at(RGB_ORANGE,1);
             }                
         }
         break;
@@ -252,24 +248,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             kp_10 = true;
         }   else {
                 kp_10 = false;
-                if (kp_10a == false) {        
+                if (winMicMute == false) {
+                    winMicMute = true;         
                     tap_code16(LALT(KC_A));          
-                    rgblight_setrgb(RGB_RED);
-                    kp_10a = true;     
-                }   else if (kp_10a == true) {
+                    rgblight_setrgb_at(RGB_RED,2);    
+                }   else if (winMicMute == true) {
+                        winMicMute = false;
                         tap_code16(LALT(KC_A));
-                        rgblight_setrgb(RGB_YELLOW);
-                        kp_10a = false;
+                        rgblight_setrgb_at(RGB_YELLOW,2);
                     };
             };         
         break;
     case KEY11:
         if (record->event.pressed) {
             kp_11 = true;       
-        }   else {
-                kp_11 = false;
+        } else {
+            kp_11 = false;
+            if (winVidMute == false) {
+                winVidMute = true;
                 tap_code16(LALT(KC_V));
+                rgblight_setrgb_at(RGB_RED, 1);
+            } else if (winVidMute == true) {
+                winVidMute = false;
+                tap_code16(LALT(KC_V));
+                rgblight_setrgb_at(RGB_YELLOW, 1);
             }
+        }
         break;
     case KEY12:
         if (record->event.pressed) {
@@ -420,6 +424,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 //for when I use rawHID to add feedback:
 void raw_hid_receive(uint8_t *data, uint8_t length) {
+    if (data[1] == 0x01) {
+        rgblight_sethsv_at(0,255,255, 2);
+        micMute = true;
+    } else if (data[1] == 0x02) {
+        rgblight_sethsv_at(255, 139, 40, 2);
+        micMute = false;
+    }
 }
 
 
@@ -427,8 +438,8 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 void keyboard_post_init_user(void) {
   // Call the post init code.
   rgblight_enable_noeeprom(); // enables Rgb, without saving settings
-  rgblight_set(); //added this per comment on Discord, trying to get rgb setup
-  rgblight_setrgb(RGB_BLUE); //chaning this does not change the lights color
+  rgblight_set(); //added this per comment on Discord, trying to get rgb on startup
+  rgblight_setrgb(RGB_BLUE); //changing this does not change the lights color
   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT); 
   set_single_persistent_default_layer(0); 
   
@@ -438,17 +449,19 @@ void keyboard_post_init_user(void) {
 layer_state_t layer_state_set_user(layer_state_t state) {
     switch (get_highest_layer(state)) {
         default:
+            rgblight_setrgb(RGB_ORANGE);
             if (micMute) {
-                rgblight_setrgb(RGB_RED);
-            }   else {
-                rgblight_setrgb(RGB_ORANGE);
+                rgblight_setrgb_at(RGB_RED, 2);
+            }   else if (vidMute) {
+                rgblight_setrgb_at(RGB_RED, 1);
             };
         break;
         case 1:
-            if (kp_10a) {
-                rgblight_setrgb(RGB_RED); 
-            }   else {
-                rgblight_setrgb(RGB_YELLOW);
+            rgblight_setrgb(RGB_YELLOW);
+            if (winMicMute) {
+                rgblight_setrgb_at(RGB_RED,2); 
+            }   else if (winVidMute) {
+                rgblight_setrgb_at(RGB_RED, 1);
             }
         break;
     case 2:

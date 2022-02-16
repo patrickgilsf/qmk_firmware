@@ -38,8 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /* COL2ROW, ROW2COL*/
 #define DIODE_DIRECTION ROW2COL
 
- #define RGB_DI_PIN E2
- #ifdef RGB_DI_PIN
+#define RGB_DI_PIN E2
+#ifdef RGB_DI_PIN
  #define RGBLED_NUM 9
  #define RGBLIGHT_HUE_STEP 8
  #define RGBLIGHT_SAT_STEP 8
@@ -48,6 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
  /*== all animations enable ==*/
  #define RGBLIGHT_ANIMATIONS
+ #define RGBLIGHT_DEFAULT_MODE RGBLIGHT_MODE_STATIC_LIGHT
+ #define RGBLIGHT_DEFAULT_HUE 21
 #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */

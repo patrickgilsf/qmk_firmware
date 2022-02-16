@@ -19,3 +19,4 @@ AUDIO_ENABLE = no           # Audio output
 LTO_ENABLE = yes            # reduce firmware size
 BACKLIGHT_DRIVER = software
 RGBLIGHT_DRIVER = WS2812
+RAW_ENABLE = yes			#raw HID
