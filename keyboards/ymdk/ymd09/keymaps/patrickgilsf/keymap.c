@@ -8,8 +8,8 @@
 
 
 #include QMK_KEYBOARD_H
-//#include "raw_hid.h"
-
+#include "raw_hid.h"
+#include "print.h"
 
 
 enum custom_keycodes {
@@ -427,9 +427,13 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
     if (data[1] == 0x01) {
         rgblight_sethsv_at(0,255,255, 2);
         micMute = true;
+        print("Mic Muted");
+        //print(data[1]);
     } else if (data[1] == 0x02) {
         rgblight_sethsv_at(255, 139, 40, 2);
         micMute = false;
+        print("Mic Unmuted");
+        //print(data[1]);
     }
 }
 
@@ -441,7 +445,8 @@ void keyboard_post_init_user(void) {
   rgblight_set(); //added this per comment on Discord, trying to get rgb on startup
   rgblight_setrgb(RGB_BLUE); //changing this does not change the lights color
   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT); 
-  set_single_persistent_default_layer(0); 
+  set_single_persistent_default_layer(0);
+  debug_enable=true; 
   
 }
 
