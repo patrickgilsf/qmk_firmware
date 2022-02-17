@@ -4,7 +4,7 @@
 /* This is my 9 key YMDK that I use to control Zoom. I have some future goals with the project as well:
     - Leverage Zoom SDK and node-hid to sync true mute status with kb rgb backlight
     - added rgb coloration for when the video is muted
-*/    
+*/
 
 
 #include QMK_KEYBOARD_H
@@ -58,8 +58,8 @@ enum custom_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-  [0] = LAYOUT(KEY1, KEY2, KEY3, 
-               KEY4, KEY5, KEY6, 
+  [0] = LAYOUT(KEY1, KEY2, KEY3,
+               KEY4, KEY5, KEY6,
                KEY7, KEY8, KEY9),
 
   [1] = LAYOUT(KEY10, KEY11, KEY12,
@@ -91,7 +91,7 @@ KEY7 - Full Screen
 KEY8 - Show/Hide Chat; // If KEY7 is down, up to layer 1.
 KEY9 - Minimal Window;
 --Layer 1 - [PC Zoom Shortcuts]
-KEY10 - Mute Mic/Toggle Keyboard Light; 
+KEY10 - Mute Mic/Toggle Keyboard Light;
 KEY11 - Mute Video; // If KEY10 is down, back to layer 0
 KEY12 - Raise/Lower Hand;
 KEY13 - Speaker/Gallery View Toggle
@@ -101,13 +101,13 @@ KEY16 - Full Screen
 KEY17 - Show/Hide Chat; // If KEY7 is down, down to layer 0.
 KEY18 - Minimal Window; // If KEY7 is down, up to layer 2
 -- Layer 2 -
-KEY19 - 
-KEY20 - 
-KEY21 - 
+KEY19 -
+KEY20 -
+KEY21 -
 KEY22 -
 KEY23 -
 KEY24 -
-KEY25 - 
+KEY25 -
 KEY26 - If KEY25 is down, back to layer 1
 KEY27 - If KEY19 && KEY25 are down, puts it in setup mode
 */
@@ -164,9 +164,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             kp_1 = true;
         } else {
             kp_1 = false;
-            if (micMute == false) {  
-                micMute = true;       
-                tap_code16(LSFT(LGUI(KC_A)));                            
+            if (micMute == false) {
+                micMute = true;
+                tap_code16(LSFT(LGUI(KC_A)));
                 //rgblight_setrgb(RGB_RED);
                 //rgblight_setrgb_at(RGB_RED,2);
                 rgblight_sethsv_at(0,255,255, 2);
@@ -187,13 +187,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 vidMute = true;
                 tap_code16(LSFT(LGUI(KC_V)));
                 //rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(245,84,204, 1);
+                rgblight_sethsv_at(0,255,255, 1);
             } else if (vidMute == true) {
                 vidMute = false;
                 tap_code16(LSFT(LGUI(KC_V)));
                 //rgblight_setrgb_at(RGB_ORANGE,1);
                 rgblight_sethsv_at(60,18,145, 1);
-            }                
+            }
         }
         break;
     case KEY3:
@@ -229,10 +229,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }
         break;
     case KEY7:
-        if (record->event.pressed) {           
+        if (record->event.pressed) {
             kp_7 = true;
-        }   else { 
-                kp_7 = false;           
+        }   else {
+                kp_7 = false;
                 if (kp_7a == false) {
                     tap_code16(LSFT(LGUI(KC_F)));
                 }
@@ -243,7 +243,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             kp_8 = true;
         }   else {
                 kp_8 = false;
-                tap_code16(LSFT(LGUI(KC_H)));                
+                tap_code16(LSFT(LGUI(KC_H)));
             }
         break;
     case KEY9:
@@ -252,11 +252,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (kp_7) {
                 layer_move(1);
                 kp_7a = true;
-            }    
+            }
         }   else {
                 kp_9 = false;
                 kp_7a = false;
-                SEND_STRING(SS_LSFT(SS_LGUI("m"))); 
+                SEND_STRING(SS_LSFT(SS_LGUI("m")));
             }
         break;
     case KEY10:
@@ -265,21 +265,21 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }   else {
                 kp_10 = false;
                 if (winMicMute == false) {
-                    winMicMute = true;         
-                    tap_code16(LALT(KC_A));          
+                    winMicMute = true;
+                    tap_code16(LALT(KC_A));
                     // rgblight_setrgb_at(RGB_RED,2);
                     rgblight_sethsv_at(0,255,255, 2);
                 }   else if (winMicMute == true) {
                         winMicMute = false;
                         tap_code16(LALT(KC_A));
                         //rgblight_setrgb_at(RGB_YELLOW,2);
-                        rgblight_sethsv_at(203,85,237, 2);
+                        rgblight_sethsv_at(144,216,237, 2);
                     };
-            };         
+            };
         break;
     case KEY11:
         if (record->event.pressed) {
-            kp_11 = true;       
+            kp_11 = true;
         } else {
             kp_11 = false;
             if (winVidMute == false) {
@@ -291,7 +291,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 winVidMute = false;
                 tap_code16(LALT(KC_V));
                 // rgblight_setrgb_at(RGB_YELLOW, 1);
-                rgblight_sethsv_at(203,85,93, 1);
+                rgblight_sethsv_at(144,216,237, 1);
             }
         }
         break;
@@ -318,7 +318,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     kp_14 = false;
                     tap_code(KC_PGUP);
                 }
-        break;   
+        break;
     case KEY15:
         if (record->event.pressed) {
             kp_15 = true;
@@ -328,13 +328,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
         break;
     case KEY16:
-        if (record->event.pressed) {           
+        if (record->event.pressed) {
             kp_16 = true;
         }   else {
                 kp_16 = false;
                 if (kp_16a == false) {
-                  tap_code16(LALT(KC_F));  
-                }   
+                  tap_code16(LALT(KC_F));
+                }
             };
         break;
     case KEY17:
@@ -343,10 +343,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             if (kp_16) {
                 layer_move(0);
                 kp_16a = true;
-            }   
-        }   else {    
+            }
+        }   else {
                 kp_17 = false;
-                kp_16a = false;            
+                kp_16a = false;
                 tap_code16(LALT(KC_H));
             }
         break;
@@ -371,7 +371,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case KEY20:
         if (record->event.pressed) {
-            kp_20 = true;             
+            kp_20 = true;
         } else {
             kp_20 = false;
         }
@@ -463,10 +463,10 @@ void keyboard_post_init_user(void) {
   rgblight_enable_noeeprom(); // enables Rgb, without saving settings
   rgblight_set(); //added this per comment on Discord, trying to get rgb on startup
   //rgblight_setrgb(RGB_BLUE); //changing this does not change the lights color
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT); 
+  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
   set_single_persistent_default_layer(0);
-  debug_enable=true; 
-  
+  debug_enable=true;
+
 }
 
 //RGB control for layers
@@ -487,7 +487,7 @@ layer_state_t layer_state_set_user(layer_state_t state) {
             //rgblight_setrgb(RGB_YELLOW);
             rgblight_sethsv_noeeprom(144,216,237);
             if (winMicMute) {
-                // rgblight_setrgb_at(RGB_RED,2); 
+                // rgblight_setrgb_at(RGB_RED,2);
                 rgblight_sethsv_at(0,255,255, 2);
             }   else if (winVidMute) {
                 // rgblight_setrgb_at(RGB_RED, 1);
@@ -499,5 +499,5 @@ layer_state_t layer_state_set_user(layer_state_t state) {
         rgblight_sethsv_noeeprom(85,255,127);
         break;
     }
-return state;    
+return state;
 }
