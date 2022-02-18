@@ -453,6 +453,14 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
         rgblight_sethsv_at(60,18,145, 2);
         micMute = false;
         print("Mic Unmuted");
+    } else if (data[1] == 0x03) {
+        rgblight_sethsv_at(0,255,255, 1);
+        vidMute = true;
+        print("Vid Muted");
+    } else if (data[1] == 0x04) {
+        rgblight_sethsv_at(60,18,145,2);
+        vidMute = false;
+        print("Vid Unmuted");
     }
 }
 
