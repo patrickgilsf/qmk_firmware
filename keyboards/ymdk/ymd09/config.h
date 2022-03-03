@@ -49,9 +49,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  /*== all animations enable ==*/
  #define RGBLIGHT_ANIMATIONS
  #define RGBLIGHT_DEFAULT_MODE RGBLIGHT_MODE_STATIC_LIGHT
+ /*
  #define RGBLIGHT_DEFAULT_HUE 60
  #define RGBLIGHT_DEFAULT_SAT 18
  #define RGBLIGHT_DEFAULT_VAL 145
+ */
+ #define RGBLIGHT_LAYERS
 #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */

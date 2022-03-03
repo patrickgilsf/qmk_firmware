@@ -55,7 +55,6 @@ enum custom_keycodes {
 };
 
 
-
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   [0] = LAYOUT(KEY1, KEY2, KEY3,
@@ -113,16 +112,16 @@ KEY27 - If KEY19 && KEY25 are down, puts it in setup mode
 */
 
 /* Here is the LED map, from various testing
-x x 0
-x x 3
-x x x
+2 1 0
+5 4 3
+8 7 6
 */
 
 //initialize booleans for stacked functions:
 bool kp_1 = false;
-    bool micMute = false; //1a bounces between toggle presses
+    bool micMute = true; //1a bounces between toggle presses
 bool kp_2 = false;
-    bool vidMute = false;
+    bool vidMute = true;
 bool kp_3 = false;
 bool kp_4 = false;
 bool kp_5 = false;
@@ -133,9 +132,9 @@ bool kp_8 = false;
 bool kp_9 = false;
 
 bool kp_10 = false;
-    bool winMicMute = false;
+    bool winMicMute = true;
 bool kp_11 = false;
-    bool winVidMute = false;
+    bool winVidMute = true;
 bool kp_12 = false;
 bool kp_13 = false;
 bool kp_14 = false;
@@ -465,42 +464,40 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 }
 
 
-//these are the initialization functions
-void keyboard_post_init_user(void) {
-  // Call the post init code.
-  rgblight_enable_noeeprom(); // enables Rgb, without saving settings
-  rgblight_set(); //added this per comment on Discord, trying to get rgb on startup
-  //rgblight_setrgb(RGB_BLUE); //changing this does not change the lights color
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-  set_single_persistent_default_layer(0);
-  debug_enable=true;
+// messing with lighting layers
+const rgblight_segment_t PROGMEM startup[] = RGBLIGHT_LAYER_SEGMENTS(
+    {1, 1, HSV_RED},
+    {2, 1, HSV_RED}
+);
+const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
+    startup
+);
 
-}
-
-//RGB control for layers
+//RGB changes upon layer change
 layer_state_t layer_state_set_user(layer_state_t state) {
     switch (get_highest_layer(state)) {
         default:
-            //rgblight_setrgb(RGB_ORANGE);
-            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
             if (micMute) {
                 // rgblight_setrgb_at(RGB_RED, 2);
                 rgblight_sethsv_at(0,255,255, 2);
-            }   else if (vidMute) {
+            };
+            if (vidMute) {
                 // rgblight_setrgb_at(RGB_RED, 1);
                 rgblight_sethsv_at(245,84,204, 1);
             };
+            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+
         break;
         case 1:
-            //rgblight_setrgb(RGB_YELLOW);
-            rgblight_sethsv_noeeprom(144,216,237);
             if (winMicMute) {
                 // rgblight_setrgb_at(RGB_RED,2);
                 rgblight_sethsv_at(0,255,255, 2);
-            }   else if (winVidMute) {
+            };
+            if (winVidMute) {
                 // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(245,84,204, 1);
-            }
+                rgblight_sethsv_at(144,216,237, 1);
+            };
+            rgblight_sethsv_noeeprom(144,216,237);
         break;
     case 2:
         // rgblight_setrgb(RGB_GREEN);
@@ -509,3 +506,19 @@ layer_state_t layer_state_set_user(layer_state_t state) {
     }
 return state;
 }
+
+//these are the initialization functions
+void keyboard_post_init_user(void) {
+  rgblight_enable_noeeprom(); //
+  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+//   set_single_persistent_default_layer(0);
+  rgblight_sethsv_noeeprom(60,80,145); //worked
+  rgblight_sethsv_at(0,255,255, 2);
+  rgblight_sethsv_at(0,255,255, 1);
+  debug_enable=true;
+}
+
+
+
+
+
