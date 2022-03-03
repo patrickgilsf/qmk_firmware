@@ -511,7 +511,7 @@ return state;
 void keyboard_post_init_user(void) {
   rgblight_enable_noeeprom(); //
   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-//   set_single_persistent_default_layer(0);
+  set_single_persistent_default_layer(0);
   rgblight_sethsv_noeeprom(60,80,145); //worked
   rgblight_sethsv_at(0,255,255, 2);
   rgblight_sethsv_at(0,255,255, 1);
