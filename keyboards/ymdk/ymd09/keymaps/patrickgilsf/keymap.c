@@ -11,6 +11,9 @@
 #include "raw_hid.h"
 #include "print.h"
 
+#define _MAC 0
+#define _PC 1
+#define _UTIL 2
 /*
 HSV Values
 RGB_RED == (0,255,255);
@@ -57,15 +60,15 @@ enum custom_keycodes {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
-  [0] = LAYOUT(KEY1, KEY2, KEY3,
+  [_MAC] = LAYOUT(KEY1, KEY2, KEY3,
                KEY4, KEY5, KEY6,
                KEY7, KEY8, KEY9),
 
-  [1] = LAYOUT(KEY10, KEY11, KEY12,
+  [_PC] = LAYOUT(KEY10, KEY11, KEY12,
                KEY13, KEY14, KEY15,
                KEY16, KEY17, KEY18),
 
-  [2] = LAYOUT(KEY19, KEY20, KEY21,
+  [_UTIL] = LAYOUT(KEY19, KEY20, KEY21,
                KEY22, KEY23, KEY24,
                KEY25, KEY26, KEY27)
 
@@ -119,9 +122,9 @@ KEY27 - If KEY19 && KEY25 are down, puts it in setup mode
 
 //initialize booleans for stacked functions:
 bool kp_1 = false;
-    bool micMute = true; //1a bounces between toggle presses
+    bool micMute = false; //1a bounces between toggle presses
 bool kp_2 = false;
-    bool vidMute = true;
+    bool vidMute = false;
 bool kp_3 = false;
 bool kp_4 = false;
 bool kp_5 = false;
@@ -132,9 +135,9 @@ bool kp_8 = false;
 bool kp_9 = false;
 
 bool kp_10 = false;
-    bool winMicMute = true;
+    bool winMicMute = false;
 bool kp_11 = false;
-    bool winVidMute = true;
+    bool winVidMute = false;
 bool kp_12 = false;
 bool kp_13 = false;
 bool kp_14 = false;
@@ -249,7 +252,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             kp_9 = true;
             if (kp_7) {
-                layer_move(1);
+                layer_move(_PC);
                 kp_7a = true;
             }
         }   else {
@@ -285,7 +288,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 winVidMute = true;
                 tap_code16(LALT(KC_V));
                 // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(245,84,204, 1); //purple
+                rgblight_sethsv_at(0,255,255, 1); //purple
             } else if (winVidMute == true) {
                 winVidMute = false;
                 tap_code16(LALT(KC_V));
@@ -340,7 +343,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             kp_17 = true;
             if (kp_16) {
-                layer_move(0);
+                layer_move(_MAC);
                 kp_16a = true;
             }
         }   else {
@@ -353,7 +356,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             kp_18 = true;
             if (kp_16) {
-                layer_move(2);
+                layer_move(_UTIL);
                 kp_16a = true;
             }
         }   else {
@@ -417,7 +420,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             kp_26 = true;
             if (kp_25) {
-                layer_move(1);
+                layer_move(_PC);
                 kp_25a = true;
             }
         }   else {
@@ -465,14 +468,15 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 
 
 
-// messing with lighting layers
-const rgblight_segment_t PROGMEM startup[] = RGBLIGHT_LAYER_SEGMENTS(
-    {1, 1, HSV_RED},
-    {2, 1, HSV_RED}
-);
-const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-    startup
-);
+// // messing with lighting layers
+// const rgblight_segment_t PROGMEM startup[] = RGBLIGHT_LAYER_SEGMENTS(
+//     {1, 1, HSV_RED},
+//     {2, 1, HSV_RED}
+// );
+// const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
+//     startup
+// );
+
 
 //these are the initialization functions
 void keyboard_post_init_user(void) {
@@ -482,17 +486,55 @@ void keyboard_post_init_user(void) {
   rgblight_sethsv_noeeprom(60,80,145); //worked
   rgblight_sethsv_at(0,255,255, 2);
   rgblight_sethsv_at(0,255,255, 1);
+  layer_state_set(_MAC);
   debug_enable=true;
+  //user_config.raw = eeconfig_read_user();
 }
 
+
+//RGB changes upon layer change
 layer_state_t layer_state_set_user(layer_state_t state) {
-    rgblight_sethsv_at(0,255,255, 2);
-    rgblight_sethsv_at(0,255,255, 1);
-    return state;
+    switch (get_highest_layer(state)) {
+        default:
+            rgblight_sethsv_at(0,255,255, 1);
+            rgblight_sethsv_at(0,255,255, 2);
+            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+            if (micMute == true) {
+                // rgblight_setrgb_at(RGB_RED, 2);
+                rgblight_sethsv_at(0,255,255, 2);
+            };
+            if (vidMute == true) {
+                // rgblight_setrgb_at(RGB_RED, 1);
+                rgblight_sethsv_at(0,255,255, 1);
+            };
+        break;
+        case _MAC:
+            rgblight_sethsv_at(0,255,255, 2);
+            rgblight_sethsv_at(0,255,255, 1);
+            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+            if (micMute == true) {
+                // rgblight_setrgb_at(RGB_RED, 2);
+                rgblight_sethsv_at(0,255,255, 2);
+            };
+            if (vidMute == true) {
+                // rgblight_setrgb_at(RGB_RED, 1);
+                rgblight_sethsv_at(0,255,255, 1);
+            };
+        break;
+        case _PC:
+            rgblight_sethsv_noeeprom(144,216,237);
+            if (winMicMute == true) {
+                // rgblight_setrgb_at(RGB_RED,2);
+                rgblight_sethsv_at(0,255,255, 2);
+            };
+            if (winVidMute == true) {
+                // rgblight_setrgb_at(RGB_RED, 1);
+                rgblight_sethsv_at(0,255,255, 1);
+            };
+        break;
+        case _UTIL:
+            rgblight_sethsv_noeeprom(85,255,127);
+        break;
+    };
+return state;
 }
-
-
-
-
-
-
