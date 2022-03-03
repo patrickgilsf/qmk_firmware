@@ -499,9 +499,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
                 // rgblight_setrgb_at(RGB_RED, 1);
                 rgblight_sethsv_at(245,84,204, 1);
             };
-            if (!micMute && !vidMute) {
-                rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
-            }
+            // if (!micMute && !vidMute) {
+            //     rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+            // }
 
         break;
         case 1:
