@@ -485,42 +485,10 @@ void keyboard_post_init_user(void) {
   debug_enable=true;
 }
 
-//RGB changes upon layer change
 layer_state_t layer_state_set_user(layer_state_t state) {
     rgblight_sethsv_at(0,255,255, 2);
     rgblight_sethsv_at(0,255,255, 1);
-    switch (get_highest_layer(state)) {
-        default:
-            if (micMute) {
-                // rgblight_setrgb_at(RGB_RED, 2);
-                rgblight_sethsv_at(0,255,255, 2);
-            };
-            if (vidMute) {
-                // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(245,84,204, 1);
-            };
-            // if (!micMute && !vidMute) {
-            //     rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
-            // }
-
-        break;
-        case 1:
-            if (winMicMute) {
-                // rgblight_setrgb_at(RGB_RED,2);
-                rgblight_sethsv_at(0,255,255, 2);
-            };
-            if (winVidMute) {
-                // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(144,216,237, 1);
-            };
-            rgblight_sethsv_noeeprom(144,216,237);
-        break;
-    case 2:
-        // rgblight_setrgb(RGB_GREEN);
-        rgblight_sethsv_noeeprom(85,255,127);
-        break;
-    }
-return state;
+    return state;
 }
 
 
