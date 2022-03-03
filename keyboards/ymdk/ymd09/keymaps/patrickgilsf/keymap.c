@@ -464,6 +464,7 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 }
 
 
+
 // messing with lighting layers
 const rgblight_segment_t PROGMEM startup[] = RGBLIGHT_LAYER_SEGMENTS(
     {1, 1, HSV_RED},
@@ -473,8 +474,21 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     startup
 );
 
+//these are the initialization functions
+void keyboard_post_init_user(void) {
+  rgblight_enable_noeeprom(); //
+  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+  set_single_persistent_default_layer(0);
+  rgblight_sethsv_noeeprom(60,80,145); //worked
+  rgblight_sethsv_at(0,255,255, 2);
+  rgblight_sethsv_at(0,255,255, 1);
+  debug_enable=true;
+}
+
 //RGB changes upon layer change
 layer_state_t layer_state_set_user(layer_state_t state) {
+    rgblight_sethsv_at(0,255,255, 2);
+    rgblight_sethsv_at(0,255,255, 1);
     switch (get_highest_layer(state)) {
         default:
             if (micMute) {
@@ -485,7 +499,9 @@ layer_state_t layer_state_set_user(layer_state_t state) {
                 // rgblight_setrgb_at(RGB_RED, 1);
                 rgblight_sethsv_at(245,84,204, 1);
             };
-            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+            if (!micMute && !vidMute) {
+                rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
+            }
 
         break;
         case 1:
@@ -507,16 +523,6 @@ layer_state_t layer_state_set_user(layer_state_t state) {
 return state;
 }
 
-//these are the initialization functions
-void keyboard_post_init_user(void) {
-  rgblight_enable_noeeprom(); //
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-  set_single_persistent_default_layer(0);
-  rgblight_sethsv_noeeprom(60,80,145); //worked
-  rgblight_sethsv_at(0,255,255, 2);
-  rgblight_sethsv_at(0,255,255, 1);
-  debug_enable=true;
-}
 
 
 
