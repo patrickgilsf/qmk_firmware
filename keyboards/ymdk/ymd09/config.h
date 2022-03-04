@@ -20,6 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "config_common.h"
 
+
 /* USB Device descriptor parameter */
 #define VENDOR_ID 0x594D // "YM"
 #define PRODUCT_ID 0x4409 // "D" + 09
@@ -56,6 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  #define RGBLIGHT_DEFAULT_VAL 145
  */
  #define RGBLIGHT_LAYERS
+ #define TAPPING_TERM 2000
 #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
