@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 /* This is my 9 key YMDK that I use to control Zoom. I have some future goals with the project as well:
-    - Leverage Zoom SDK and node-hid to sync true mute status with kb rgb backlight
+    - Leverage Zoom SDK and node-hid to sync 1 mute status with kb rgb backlight
     - added rgb coloration for when the video is muted
 */
-
 
 #include QMK_KEYBOARD_H
 #include "raw_hid.h"
@@ -14,6 +13,15 @@
 #define _MAC 0
 #define _PC 1
 #define _UTIL 2
+
+// typedef union {
+//   uint32_t raw;
+//   struct {
+//     bool     rgb_layer_change :1;
+//   };
+// } user_config_t;
+// user_config_t user_config;
+
 /*
 HSV Values
 RGB_RED == (0,255,255);
@@ -74,12 +82,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 };
 
-//this is the timer for flash mode sequence
-//static uint32_t key_timer = 0;
-
-
-
-
 /*
 Legend:
 --Layer 0 - [Mac OS Zoom shortcuts]
@@ -114,84 +116,172 @@ KEY26 - If KEY25 is down, back to layer 1
 KEY27 - If KEY19 && KEY25 are down, puts it in setup mode
 */
 
-/* Here is the LED map, from various testing
+/* LEDs mapped out
 2 1 0
 5 4 3
 8 7 6
 */
 
-//initialize booleans for stacked functions:
-bool kp_1 = false;
-    bool micMute = false; //1a bounces between toggle presses
-bool kp_2 = false;
-    bool vidMute = false;
-bool kp_3 = false;
-bool kp_4 = false;
-bool kp_5 = false;
-bool kp_6 = false;
-bool kp_7 = false;
-    bool kp_7a = false;
-bool kp_8 = false;
-bool kp_9 = false;
+//this is something I'm doing custom...not sure if there is a better way
+bool kp_1 = 0;
+    bool micMute = 1;
+bool kp_2 = 0;
+    bool vidMute = 1;
+bool kp_3 = 0;
+bool kp_4 = 0;
+bool kp_5 = 0;
+bool kp_6 = 0;
+bool kp_7 = 0;
+    bool kp_7a = 0;
+bool kp_8 = 0;
+bool kp_9 = 0;
+bool kp_10 = 0;
+    bool winMicMute = 1;
+bool kp_11 = 0;
+    bool winVidMute = 1;
+bool kp_12 = 0;
+bool kp_13 = 0;
+bool kp_14 = 0;
+bool kp_15 = 0;
+bool kp_16 = 0;
+    bool kp_16a = 0;
+bool kp_17 = 0;
+bool kp_18 = 0;
 
-bool kp_10 = false;
-    bool winMicMute = false;
-bool kp_11 = false;
-    bool winVidMute = false;
-bool kp_12 = false;
-bool kp_13 = false;
-bool kp_14 = false;
-bool kp_15 = false;
-bool kp_16 = false;
-    bool kp_16a = false;
-bool kp_17 = false;
-bool kp_18 = false;
+bool kp_19 = 0;
+    bool kp_19a = 0;
+bool kp_20 = 0;
+bool kp_21 = 0;
+bool kp_22 = 0;
+bool kp_23 = 0;
+bool kp_24 = 0;
+bool kp_25 = 0;
+    bool kp_25a = 0;
+bool kp_26 = 0;
+bool kp_27 = 0;
 
-bool kp_19 = false;
-    bool kp_19a = false;
-bool kp_20 = false;
-bool kp_21 = false;
-bool kp_22 = false;
-bool kp_23 = false;
-bool kp_24 = false;
-bool kp_25 = false;
-    bool kp_25a = false;
-bool kp_26 = false;
-bool kp_27 = false;
+//https://docs.qmk.fm/#/feature_rgblight?id=defining-lighting-layers
+const rgblight_segment_t PROGMEM micMuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
+    {2, 1, 0,255,255}
+);
+const rgblight_segment_t PROGMEM micUnmuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
+    {2, 1, 60,80,145}
+);
+const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
+    micMuteLED,
+    micUnmuteLED
+);
 
+//these are the initialization functions
+void keyboard_post_init_user(void) {
+rgblight_sethsv_noeeprom(60,80,145);
+//   rgblight_enable_noeeprom();
+//   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+//   layer_state_set_user(_MAC);
+//   set_single_persistent_default_layer(0);
+  rgblight_layers = my_rgb_layers;
+//   user_config.raw = eeconfig_read_user();
+  debug_enable=1;
+}
+
+// void eeconfig_init_user(void) {  // EEPROM is getting reset!
+//   user_config.raw = 0;
+//   user_config.rgb_layer_change = true; // We want this enabled by default
+//   // use the non noeeprom versions, to write these values to EEPROM too
+//   rgblight_enable(); // Enable RGB by default
+//   rgblight_set();
+//   sethsv(0,255,255, (LED_TYPE *)&led[0]); // led 0
+//   sethsv(0,255,255, (LED_TYPE *)&led[1]); // led 1
+//   eeconfig_update_user(user_config.raw); // Write default value to EEPROM now
+// }
+
+/*
+//for when I use rawHID to add feedback:
+void raw_hid_receive(uint8_t *data, uint8_t length) {
+    if (data[1] == 0x01) {
+        rgblight_sethsv_at(0,255,255, 2);
+        micMute = 1;
+        print("Mic Muted");
+    } else if (data[1] == 0x02) { //need to add a query of which layer you are on
+        rgblight_sethsv_at(60,18,145, 2);
+        micMute = 0;
+        print("Mic Unmuted");
+    } else if (data[1] == 0x03) {
+        rgblight_sethsv_at(0,255,255, 1);
+        vidMute = 1;
+        print("Vid Muted");
+    } else if (data[1] == 0x04) {
+        rgblight_sethsv_at(60,18,145,2);
+        vidMute = 0;
+        print("Vid Unmuted");
+    }
+}
+*/
+//layer control
+layer_state_t layer_state_set_user(layer_state_t state) {
+    switch (get_highest_layer(state)) {
+        default:
+            rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+        break;
+        case _MAC:
+            if (micMute == 1) {
+                rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+                // rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+            };
+            if (vidMute ==  1) {
+                rgblight_sethsv_at(0,255,255, 1);
+            };
+            rgblight_sethsv_noeeprom(60,80,145);
+        break;
+        case _PC:
+            // if (winMicMute == 1) {
+            //     rgblight_sethsv_at(0,255,255, 2);
+            // };
+            // if (winVidMute == 1) {
+            //     rgblight_sethsv_at(0,255,255, 1);
+            // };
+            // rgblight_sethsv_noeeprom(144,216,237);
+        break;
+        case _UTIL:
+            // rgblight_sethsv_noeeprom(85,255,127);
+        break;
+        };
+return state;
+}
+
+//custom keys
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
     case KEY1: //Mic Mute
         if (record->event.pressed) {
-            kp_1 = true;
+            kp_1 = 1;
         } else {
-            kp_1 = false;
-            if (micMute == false) {
-                micMute = true;
+            kp_1 = 0;
+            if (micMute == 0) {
+                rgblight_set_layer_state(0, micMute = 0);
+                micMute = 1;
                 tap_code16(LSFT(LGUI(KC_A)));
-                //rgblight_setrgb(RGB_RED);
-                //rgblight_setrgb_at(RGB_RED,2);
-                rgblight_sethsv_at(0,255,255, 2);
-            }   else if (micMute == true) {
-                    micMute = false;
+                print("muted");
+            }   else if (micMute == 1) {
+                    rgblight_set_layer_state(1, micMute = 1);
+                    micMute = 0;
                     tap_code16(LSFT(LGUI(KC_A)));
-                    //rgblight_setrgb_at(RGB_ORANGE,2);
-                    rgblight_sethsv_at(60,18,145, 2);
+                    print("unmuted");
                 };
         };
         break;
     case KEY2: // Video Mute
         if (record->event.pressed) {
-            kp_2 = true;
+            kp_2 = 1;
         } else {
-            kp_2 = false;
-            if (vidMute == false) {
-                vidMute = true;
+            kp_2 = 0;
+            if (vidMute == 0) {
+                vidMute = 1;
                 tap_code16(LSFT(LGUI(KC_V)));
                 //rgblight_setrgb_at(RGB_RED, 1);
                 rgblight_sethsv_at(0,255,255, 1);
-            } else if (vidMute == true) {
-                vidMute = false;
+            } else if (vidMute == 1) {
+                vidMute = 0;
                 tap_code16(LSFT(LGUI(KC_V)));
                 //rgblight_setrgb_at(RGB_ORANGE,1);
                 rgblight_sethsv_at(60,18,145, 1);
@@ -200,79 +290,78 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case KEY3:
         if (record->event.pressed) {
-            kp_3 = true;
+            kp_3 = 1;
         }   else {
                 tap_code16(LALT(KC_Y));
-                kp_3 = false;
+                kp_3 = 0;
         }
         break;
     case KEY4:
         if (record->event.pressed) {
-            kp_4 = true;
+            kp_4 = 1;
         }   else {
                 tap_code16(LSFT(LGUI(KC_W)));
-                kp_4 = false;
+                kp_4 = 0;
         }
         break;
     case KEY5:
         if (record->event.pressed) {
-            kp_5 = true;
+            kp_5 = 1;
         }   else {
                 tap_code16(LCTL(KC_P));
-                kp_5 = false;
+                kp_5 = 0;
         }
         break;
     case KEY6:
         if (record->event.pressed) {
-            kp_6 = true;
+            kp_6 = 1;
         }   else {
                 tap_code16(LCTL(KC_N));
-                kp_6 = false;
+                kp_6 = 0;
         }
         break;
     case KEY7:
         if (record->event.pressed) {
-            kp_7 = true;
+            kp_7 = 1;
         }   else {
-                kp_7 = false;
-                if (kp_7a == false) {
+                kp_7 = 0;
+                if (kp_7a == 0) {
                     tap_code16(LSFT(LGUI(KC_F)));
                 }
             }
         break;
     case KEY8:
         if (record->event.pressed) {
-            kp_8 = true;
+            kp_8 = 1;
         }   else {
-                kp_8 = false;
+                kp_8 = 0;
                 tap_code16(LSFT(LGUI(KC_H)));
             }
         break;
     case KEY9:
         if (record->event.pressed) {
-            kp_9 = true;
+            kp_9 = 1;
             if (kp_7) {
                 layer_move(_PC);
-                kp_7a = true;
+                kp_7a = 1;
             }
         }   else {
-                kp_9 = false;
-                kp_7a = false;
+                kp_9 = 0;
+                kp_7a = 0;
                 SEND_STRING(SS_LSFT(SS_LGUI("m")));
             }
         break;
     case KEY10:
         if (record->event.pressed) {
-            kp_10 = true;
+            kp_10 = 1;
         }   else {
-                kp_10 = false;
-                if (winMicMute == false) {
-                    winMicMute = true;
+                kp_10 = 0;
+                if (winMicMute == 0) {
+                    winMicMute = 1;
                     tap_code16(LALT(KC_A));
-                    // rgblight_setrgb_at(RGB_RED,2);
                     rgblight_sethsv_at(0,255,255, 2);
-                }   else if (winMicMute == true) {
-                        winMicMute = false;
+                }   else if (winMicMute == 1) {
+                        winMicMute = 0;
                         tap_code16(LALT(KC_A));
                         //rgblight_setrgb_at(RGB_YELLOW,2);
                         rgblight_sethsv_at(144,216,237, 2);
@@ -281,16 +370,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case KEY11:
         if (record->event.pressed) {
-            kp_11 = true;
+            kp_11 = 1;
         } else {
-            kp_11 = false;
-            if (winVidMute == false) {
-                winVidMute = true;
+            kp_11 = 0;
+            if (winVidMute == 0) {
+                winVidMute = 1;
                 tap_code16(LALT(KC_V));
                 // rgblight_setrgb_at(RGB_RED, 1);
                 rgblight_sethsv_at(0,255,255, 1); //purple
-            } else if (winVidMute == true) {
-                winVidMute = false;
+            } else if (winVidMute == 1) {
+                winVidMute = 0;
                 tap_code16(LALT(KC_V));
                 // rgblight_setrgb_at(RGB_YELLOW, 1);
                 rgblight_sethsv_at(144,216,237, 1);
@@ -299,242 +388,147 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case KEY12:
         if (record->event.pressed) {
-            kp_12 = true;
+            kp_12 = 1;
             }   else {
-                    kp_12 = false;
+                    kp_12 = 0;
                     tap_code16(LALT(KC_Y));
                 }
         break;
     case KEY13:
         if (record->event.pressed) {
-            kp_13 = true;
+            kp_13 = 1;
             }   else {
-                    kp_13 = false;
+                    kp_13 = 0;
                     tap_code16(LALT(KC_F2));
                 }
         break;
     case KEY14:
         if (record->event.pressed) {
-            kp_14 = true;
+            kp_14 = 1;
             }   else {
-                    kp_14 = false;
+                    kp_14 = 0;
                     tap_code(KC_PGUP);
                 }
         break;
     case KEY15:
         if (record->event.pressed) {
-            kp_15 = true;
+            kp_15 = 1;
             }   else {
-                    kp_15 = false;
+                    kp_15 = 0;
                     tap_code16(KC_PGDOWN);
                 }
         break;
     case KEY16:
         if (record->event.pressed) {
-            kp_16 = true;
+            kp_16 = 1;
         }   else {
-                kp_16 = false;
-                if (kp_16a == false) {
+                kp_16 = 0;
+                if (kp_16a == 0) {
                   tap_code16(LALT(KC_F));
                 }
             };
         break;
     case KEY17:
         if (record->event.pressed) {
-            kp_17 = true;
+            kp_17 = 1;
             if (kp_16) {
                 layer_move(_MAC);
-                kp_16a = true;
+                kp_16a = 1;
             }
         }   else {
-                kp_17 = false;
-                kp_16a = false;
+                kp_17 = 0;
+                kp_16a = 0;
                 tap_code16(LALT(KC_H));
             }
         break;
     case KEY18:
         if (record->event.pressed) {
-            kp_18 = true;
+            kp_18 = 1;
             if (kp_16) {
                 layer_move(_UTIL);
-                kp_16a = true;
+                kp_16a = 1;
             }
         }   else {
-                kp_18 = false;
-                kp_16a = false;
+                kp_18 = 0;
+                kp_16a = 0;
             }
         break;
     case KEY19:
         if (record->event.pressed) {
-            kp_19 = true;
+            kp_19 = 1;
         }   else {
-            kp_19 = false;
+            kp_19 = 0;
         }
         break;
     case KEY20:
         if (record->event.pressed) {
-            kp_20 = true;
+            kp_20 = 1;
         } else {
-            kp_20 = false;
+            kp_20 = 0;
         }
         break;
     case KEY21:
         if (record->event.pressed) {
-            kp_21 = true;
+            kp_21 = 1;
         }   else {
-                kp_21 = false;
+                kp_21 = 0;
             }
         break;
     case KEY22:
         if (record->event.pressed) {
-            kp_22 = true;
+            kp_22 = 1;
         }   else {
-                kp_22 = false;
+                kp_22 = 0;
             }
         break;
     case KEY23:
         if (record->event.pressed) {
-            kp_23 = true;
+            kp_23 = 1;
         }   else {
-                kp_23 = false;
+                kp_23 = 0;
             }
         break;
     case KEY24:
         if (record->event.pressed) {
-            kp_24 = true;
+            kp_24 = 1;
         }   else {
-            kp_24 = false;
+            kp_24 = 0;
         }
         break;
     case KEY25:
         if (record->event.pressed) {
-            kp_25 = true;
+            kp_25 = 1;
         }   else {
-            kp_25 = false;
-            /*if (kp_25a == false) {
+            kp_25 = 0;
+            /*if (kp_25a == 0) {
                 //put command here if you think of one
             }*/
         }
         break;
     case KEY26:
         if (record->event.pressed) {
-            kp_26 = true;
+            kp_26 = 1;
             if (kp_25) {
                 layer_move(_PC);
-                kp_25a = true;
+                kp_25a = 1;
             }
         }   else {
-            kp_26 = false;
-            kp_25a = false;
+            kp_26 = 0;
+            kp_25a = 0;
             }
         break;
     case KEY27:
         if (record->event.pressed) {
-            kp_27 = true;
+            kp_27 = 1;
             if (kp_19 && kp_25) {
                 //rgblight_setrgb(RGB_WHITE);
                 rgblight_sethsv_noeeprom(0,0,255);
                 reset_keyboard();
             }
        }   else {
-            kp_27 = false;
+            kp_27 = 0;
         }
         break;
     }
-    return true;
+    return 1;
 };
-
-
-//for when I use rawHID to add feedback:
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-    if (data[1] == 0x01) {
-        rgblight_sethsv_at(0,255,255, 2);
-        micMute = true;
-        print("Mic Muted");
-    } else if (data[1] == 0x02) { //need to add a query of which layer you are on
-        rgblight_sethsv_at(60,18,145, 2);
-        micMute = false;
-        print("Mic Unmuted");
-    } else if (data[1] == 0x03) {
-        rgblight_sethsv_at(0,255,255, 1);
-        vidMute = true;
-        print("Vid Muted");
-    } else if (data[1] == 0x04) {
-        rgblight_sethsv_at(60,18,145,2);
-        vidMute = false;
-        print("Vid Unmuted");
-    }
-}
-
-
-
-// // messing with lighting layers
-// const rgblight_segment_t PROGMEM startup[] = RGBLIGHT_LAYER_SEGMENTS(
-//     {1, 1, HSV_RED},
-//     {2, 1, HSV_RED}
-// );
-// const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
-//     startup
-// );
-
-
-//these are the initialization functions
-void keyboard_post_init_user(void) {
-  rgblight_enable_noeeprom(); //
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-  set_single_persistent_default_layer(0);
-  rgblight_sethsv_noeeprom(60,80,145); //worked
-  rgblight_sethsv_at(0,255,255, 2);
-  rgblight_sethsv_at(0,255,255, 1);
-  layer_state_set(_MAC);
-  debug_enable=true;
-  //user_config.raw = eeconfig_read_user();
-}
-
-
-//RGB changes upon layer change
-layer_state_t layer_state_set_user(layer_state_t state) {
-    switch (get_highest_layer(state)) {
-        default:
-            rgblight_sethsv_at(0,255,255, 1);
-            rgblight_sethsv_at(0,255,255, 2);
-            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
-            if (micMute == true) {
-                // rgblight_setrgb_at(RGB_RED, 2);
-                rgblight_sethsv_at(0,255,255, 2);
-            };
-            if (vidMute == true) {
-                // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(0,255,255, 1);
-            };
-        break;
-        case _MAC:
-            rgblight_sethsv_at(0,255,255, 2);
-            rgblight_sethsv_at(0,255,255, 1);
-            rgblight_sethsv_noeeprom(60,18,145); //gunmetal grey
-            if (micMute == true) {
-                // rgblight_setrgb_at(RGB_RED, 2);
-                rgblight_sethsv_at(0,255,255, 2);
-            };
-            if (vidMute == true) {
-                // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(0,255,255, 1);
-            };
-        break;
-        case _PC:
-            rgblight_sethsv_noeeprom(144,216,237);
-            if (winMicMute == true) {
-                // rgblight_setrgb_at(RGB_RED,2);
-                rgblight_sethsv_at(0,255,255, 2);
-            };
-            if (winVidMute == true) {
-                // rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(0,255,255, 1);
-            };
-        break;
-        case _UTIL:
-            rgblight_sethsv_noeeprom(85,255,127);
-        break;
-    };
-return state;
-}
