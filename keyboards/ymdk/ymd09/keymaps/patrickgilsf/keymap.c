@@ -14,6 +14,7 @@
 #define _PC 1
 #define _UTIL 2
 
+
 // typedef union {
 //   uint32_t raw;
 //   struct {
@@ -164,26 +165,36 @@ bool kp_27 = 0;
 const rgblight_segment_t PROGMEM micMuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
     {2, 1, 0,255,255}
 );
-const rgblight_segment_t PROGMEM micUnmuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
-    {2, 1, 60,80,145}
+// const rgblight_segment_t PROGMEM micUnmuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
+//     {2, 1, 60,80,145}
+// );
+const rgblight_segment_t PROGMEM vidMuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
+    {1, 1, 0,255,255}
 );
+// const rgblight_segment_t PROGMEM vidUnmuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
+//     {1, 1, 60,80,145}
+// );
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     micMuteLED,
-    micUnmuteLED
+    vidMuteLED
 );
 
 //these are the initialization functions
 void keyboard_post_init_user(void) {
 rgblight_sethsv_noeeprom(60,80,145);
+rgblight_layers = my_rgb_layers;
 //   rgblight_enable_noeeprom();
 //   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-//   layer_state_set_user(_MAC);
+  layer_state_set_user(_MAC);
 //   set_single_persistent_default_layer(0);
-  rgblight_layers = my_rgb_layers;
 //   user_config.raw = eeconfig_read_user();
   debug_enable=1;
 }
 
+bool led_update_user(led_t led_state) {
+    rgblight_set_layer_state(0, micMute = 1);
+    return true;
+}
 // void eeconfig_init_user(void) {  // EEPROM is getting reset!
 //   user_config.raw = 0;
 //   user_config.rgb_layer_change = true; // We want this enabled by default
@@ -221,29 +232,47 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 layer_state_t layer_state_set_user(layer_state_t state) {
     switch (get_highest_layer(state)) {
         default:
-            rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+            rgblight_set_layer_state(0, layer_state_cmp(state, micMute == 1));
+            rgblight_set_layer_state(1, layer_state_cmp(state, vidMute == 1));
+            // sethsv(0,255,255,   (LED_TYPE *)&led[1]);
+            // sethsv(0,255,255, (LED_TYPE *)&led[2]);
+            // rgblight_set();
         break;
         case _MAC:
+        print("on mac layer");
+            rgblight_set_layer_state(0, layer_state_is(_MAC));
+            rgblight_set_layer_state(1, layer_state_is(_MAC));
             if (micMute == 1) {
-                rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+                rgblight_set_layer_state(0, layer_state_is(_MAC));
                 // rgblight_set_layer_state(0, layer_state_cmp(state, _MAC));
+                // sethsv(0,255,255, (LED_TYPE *)&led[2]);
+                // rgblight_set();
+            } else if (micMute == 0) {
+                rgblight_set_layer_state(1, layer_state_is(!_MAC));
+                // rgblight_set_layer_state(1, layer_state_cmp(state, _MAC));
+                // sethsv(0,255,255,   (LED_TYPE *)&led[1]);
+                // rgblight_set();
             };
             if (vidMute ==  1) {
-                rgblight_sethsv_at(0,255,255, 1);
+                // rgblight_set_layer_state(2, layer_state_cmp(state, _MAC));
+            } else if (vidMute == 0) {
+                // rgblight_set_layer_state(3, layer_state_cmp(state, _MAC));
             };
             rgblight_sethsv_noeeprom(60,80,145);
         break;
         case _PC:
+        print("on pc layer");
             // if (winMicMute == 1) {
             //     rgblight_sethsv_at(0,255,255, 2);
             // };
             // if (winVidMute == 1) {
             //     rgblight_sethsv_at(0,255,255, 1);
-            // };
-            // rgblight_sethsv_noeeprom(144,216,237);
+            // };˙
+            rgblight_sethsv_noeeprom(144,216,237);
         break;
         case _UTIL:
-            // rgblight_sethsv_noeeprom(85,255,127);
+        print("on util layer");
+            rgblight_sethsv_noeeprom(85,255,127);
         break;
         };
 return state;
@@ -258,15 +287,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             kp_1 = 0;
             if (micMute == 0) {
-                rgblight_set_layer_state(0, micMute = 0);
+                // rgblight_set_layer_state(1, micMute = 1);
                 micMute = 1;
+                rgblight_set_layer_state(0, micMute = 1);
                 tap_code16(LSFT(LGUI(KC_A)));
-                print("muted");
+                print("mic muted");
             }   else if (micMute == 1) {
-                    rgblight_set_layer_state(1, micMute = 1);
+                    // rgblight_set_layer_state(1, micMute = 1);
+                    // rgblight_set_layer_state(0, micMute = 0);
                     micMute = 0;
+                    rgblight_set_layer_state(0, micMute = 0);
                     tap_code16(LSFT(LGUI(KC_A)));
-                    print("unmuted");
+                    print("mic unmuted");
                 };
         };
         break;
@@ -276,17 +308,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         } else {
             kp_2 = 0;
             if (vidMute == 0) {
+                rgblight_set_layer_state(0, vidMute = 0);
                 vidMute = 1;
                 tap_code16(LSFT(LGUI(KC_V)));
-                //rgblight_setrgb_at(RGB_RED, 1);
-                rgblight_sethsv_at(0,255,255, 1);
+                print("vid muted");
             } else if (vidMute == 1) {
+                rgblight_set_layer_state(1, vidMute = 1);
                 vidMute = 0;
                 tap_code16(LSFT(LGUI(KC_V)));
-                //rgblight_setrgb_at(RGB_ORANGE,1);
-                rgblight_sethsv_at(60,18,145, 1);
-            }
-        }
+                print("vid unmuted");
+            };
+        };
         break;
     case KEY3:
         if (record->event.pressed) {
