@@ -117,6 +117,7 @@ flashKeeb - If utilOne && utilSeven are down, puts it in setup mode
 bool mic_Muted = 1;
 bool vid_Muted = 1;
 bool screen_Share_Press = 0;
+bool screen_is_sharing = 0;
 //_MAC
 bool mac_Full_Shift = 0;
 bool mac_chat_open = 0;
@@ -145,7 +146,7 @@ void keyboard_post_init_user(void) {
 rgblight_sethsv_noeeprom(60,80,145);
 rgblight_layers = my_rgb_layers;
 //   rgblight_enable_noeeprom();
-//   rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
   layer_state_set_user(_MAC);
 //   set_single_persistent_default_layer(0);
   debug_enable=1;
@@ -266,6 +267,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             screen_Share_Press = 1; //matrix scan is listening for these events
             winSSTimer = timer_read();
         } else {
+            if (screen_is_sharing == 1) {
+                // tap_code16(LSFT(LGUI(KC_S)));
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+                screen_is_sharing = 0;
+            }
             screen_Share_Press = 0;
         }
     case macGalleryToggle:
@@ -468,14 +474,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 //scans for my press and hold (screen share)...wish there was a better way, but alas
 void matrix_scan_user(void) {
+    if (timer_elapsed(macSSTimer) > 2000) {
+        // print("timer elapsed ");
+    }
     if (screen_Share_Press == 1 && timer_elapsed(macSSTimer) > 2000) {
         print("mac sharing");
         tap_code16(LSFT(LGUI(KC_S)));
         screen_Share_Press = 0;
+        // screen_is_sharing = 1;
+        // rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
     };
-    if (screen_Share_Press == 1 && timer_elapsed(winSSTimer) > 2000) {
-        print("win sharing");
-        tap_code16(LALT(LSFT(KC_S)));
-        screen_Share_Press = 0;
-    }
+    // if (screen_Share_Press == 1 && timer_elapsed(winSSTimer) > 2000) {
+    //     print("win sharing");
+    //     tap_code16(LALT(LSFT(KC_S)));
+    //     screen_Share_Press = 0;
+    //     screen_is_sharing = 1;
+    // }
 };
