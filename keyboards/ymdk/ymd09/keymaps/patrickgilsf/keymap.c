@@ -116,12 +116,13 @@ flashKeeb - If utilOne && utilSeven are down, puts it in setup mode
 //_MAC and _PC
 bool mic_Muted = 1;
 bool vid_Muted = 1;
-bool screen_Share_Press = 0;
 bool screen_is_sharing = 0;
 //_MAC
+bool mac_screen_share_press = 0;
 bool mac_Full_Shift = 0;
 bool mac_chat_open = 0;
 //_PC
+bool win_screen_share_press = 0;
 bool win_Full_Shift = 0;
 bool win_chat_open = 0;
 //_UTIL
@@ -226,7 +227,7 @@ return state;
 
 //timer for press and hold
 static uint16_t macSSTimer;
-// static uint16_t winSSTimer;
+static uint16_t winSSTimer;
 
 //custom keys
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -263,9 +264,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case macShareScreen:
         if (record->event.pressed) {
             macSSTimer = timer_read();
-            screen_Share_Press = 1; //matrix scan is listening for these events
+            mac_screen_share_press = 1; //matrix scan is listening for these events
         } else {
-            screen_Share_Press = 0;
+            mac_screen_share_press = 0;
             // if (screen_is_sharing == 1) { //deprecated idea
             //     tap_code16(LSFT(LGUI(KC_S)));
             //     screen_is_sharing = 0;
@@ -365,10 +366,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case winShareScreen:
         if (record->event.pressed) {
-            screen_Share_Press = 1; //matrix scan is listening for these events
-            // macSSTimer = timer_read();
+            win_screen_share_press = 1; //matrix scan is listening for these events
+            winSSTimer = timer_read();
         }   else {
-            tap_code16(LALT(KC_Y));
+
                 }
         break;
     case winGalleryToggle:
@@ -414,7 +415,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     win_chat_open = 1;
                 } else if (win_chat_open == 1) {
                     tap_code16(LALT(KC_H));
-                    sethsv(60,80,145, (LED_TYPE *)&led[7]);
+                    sethsv(144,216,237, (LED_TYPE *)&led[7]);
                     rgblight_set();
                     win_chat_open = 0;
                 }
@@ -476,16 +477,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 //scans for my press and hold (screen share)...wish there was a better way, but alas
 void matrix_scan_user(void) {
-    if (screen_Share_Press == 1 && timer_elapsed(macSSTimer) > 2000) {
+    if (mac_screen_share_press == 1 && timer_elapsed(macSSTimer) > 2000) {
         print("mac sharing");
         tap_code16(LSFT(LGUI(KC_S)));
         screen_is_sharing = 1;
         // rgblight_mode(RGBLIGHT_MODE_BREATHING);
-        screen_Share_Press = 0;
+        mac_screen_share_press = 0;
     };
-    // if (screen_Share_Press == 1 && timer_elapsed(winSSTimer) > 2000) {
-    //     print("win sharing");
-    //     tap_code16(LALT(LSFT(KC_S)));
-    //     screen_Share_Press = 0;
-    // }
+    if (win_screen_share_press == 1 && timer_elapsed(winSSTimer) > 2000) {
+        print("win sharing");
+        tap_code16(LALT(LSFT(KC_S)));
+        win_screen_share_press = 0;
+    }
 };
