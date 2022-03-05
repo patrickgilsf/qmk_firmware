@@ -145,11 +145,11 @@ const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
 void keyboard_post_init_user(void) {
 rgblight_sethsv_noeeprom(60,80,145);
 rgblight_layers = my_rgb_layers;
-//   rgblight_enable_noeeprom();
+rgblight_enable_noeeprom();
 rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-  layer_state_set_user(_MAC);
-//   set_single_persistent_default_layer(0);
-  debug_enable=1;
+layer_state_set_user(_MAC);
+set_single_persistent_default_layer(_MAC);
+debug_enable=1;
 }
 
 //raw HID - connects with my node script
@@ -177,8 +177,6 @@ void raw_hid_receive(uint8_t *data, uint8_t length) {
 layer_state_t layer_state_set_user(layer_state_t state) {
     switch (get_highest_layer(state)) {
         default:
-            // rgblight_set_layer_state(0, layer_state_cmp(state, mic_Muted == 1));
-            // rgblight_set_layer_state(1, layer_state_cmp(state, vid_Muted == 1));
         break;
         case _MAC:
             print("on mac layer");
@@ -228,7 +226,7 @@ return state;
 
 //timer for press and hold
 static uint16_t macSSTimer;
-static uint16_t winSSTimer;
+// static uint16_t winSSTimer;
 
 //custom keys
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
@@ -264,20 +262,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case macShareScreen:
         if (record->event.pressed) {
+            macSSTimer = timer_read();
             screen_Share_Press = 1; //matrix scan is listening for these events
-            winSSTimer = timer_read();
         } else {
-            if (screen_is_sharing == 1) {
-                // tap_code16(LSFT(LGUI(KC_S)));
-                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
-                screen_is_sharing = 0;
-            }
             screen_Share_Press = 0;
+            // if (screen_is_sharing == 1) { //deprecated idea
+            //     tap_code16(LSFT(LGUI(KC_S)));
+            //     screen_is_sharing = 0;
+            //     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
+            // }
         }
+        return false;
     case macGalleryToggle:
         if (record->event.pressed) {
         }   else {
                 tap_code16(LSFT(LGUI(KC_W)));
+                rgblight_mode(RGBLIGHT_MODE_BREATHING);
         }
         break;
     case macGalleryLeft:
@@ -366,7 +366,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case winShareScreen:
         if (record->event.pressed) {
             screen_Share_Press = 1; //matrix scan is listening for these events
-            macSSTimer = timer_read();
+            // macSSTimer = timer_read();
         }   else {
             tap_code16(LALT(KC_Y));
                 }
@@ -402,7 +402,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         break;
     case winChat:
         if (record->event.pressed) {
-            if (win_Full_Shift) {
+            if (win_Full_Shift == 1) {
                 layer_move(_MAC);
                 mac_Full_Shift = 1;
             }
@@ -453,6 +453,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             if (flash_two) {
                 layer_move(_PC);
+                win_Full_Shift = 0;
             }
         }   else {
             }
@@ -462,6 +463,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             kp_27 = 1;
             if (flash_one && flash_two) {
                 rgblight_sethsv_noeeprom(0,0,255);
+                rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
                 reset_keyboard();
             }
        }   else {
@@ -474,20 +476,16 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 //scans for my press and hold (screen share)...wish there was a better way, but alas
 void matrix_scan_user(void) {
-    if (timer_elapsed(macSSTimer) > 2000) {
-        // print("timer elapsed ");
-    }
     if (screen_Share_Press == 1 && timer_elapsed(macSSTimer) > 2000) {
         print("mac sharing");
         tap_code16(LSFT(LGUI(KC_S)));
+        screen_is_sharing = 1;
+        // rgblight_mode(RGBLIGHT_MODE_BREATHING);
         screen_Share_Press = 0;
-        // screen_is_sharing = 1;
-        // rgblight_mode_noeeprom(RGBLIGHT_MODE_BREATHING);
     };
     // if (screen_Share_Press == 1 && timer_elapsed(winSSTimer) > 2000) {
     //     print("win sharing");
     //     tap_code16(LALT(LSFT(KC_S)));
     //     screen_Share_Press = 0;
-    //     screen_is_sharing = 1;
     // }
 };
