@@ -408,18 +408,20 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 mac_Full_Shift = 1;
             }
         }   else {
-                if (win_chat_open == 0) {
-                    tap_code16(LALT(KC_H));
-                    sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
-                    rgblight_set();
-                    win_chat_open = 1;
-                } else if (win_chat_open == 1) {
-                    tap_code16(LALT(KC_H));
-                    sethsv(144,216,237, (LED_TYPE *)&led[7]);
-                    rgblight_set();
-                    win_chat_open = 0;
+                if (win_Full_Shift == 0) {
+                    if (win_chat_open == 0) {
+                        tap_code16(LALT(KC_H));
+                        sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
+                        rgblight_set();
+                        win_chat_open = 1;
+                    } else if (win_chat_open == 1) {
+                        tap_code16(LALT(KC_H));
+                        sethsv(144,216,237, (LED_TYPE *)&led[7]);
+                        rgblight_set();
+                        win_chat_open = 0;
+                    }
                 }
-
+                win_Full_Shift = 0;
             }
         break;
     case winMini:
@@ -446,6 +448,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     case utilSeven:
         if (record->event.pressed) {
             flash_two = 1;
+            win_Full_Shift = 1;
         }   else {
             flash_two = 0;
         }
@@ -454,7 +457,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
             if (flash_two) {
                 layer_move(_PC);
-                win_Full_Shift = 0;
+                win_Full_Shift = 1;
             }
         }   else {
             }
