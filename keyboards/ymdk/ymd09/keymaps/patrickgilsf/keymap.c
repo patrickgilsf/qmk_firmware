@@ -137,9 +137,13 @@ const rgblight_segment_t PROGMEM micMuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
 const rgblight_segment_t PROGMEM vidMuteLED[] = RGBLIGHT_LAYER_SEGMENTS(
     {1, 1, 0,255,255}
 );
+const rgblight_segment_t PROGMEM chatLED[] = RGBLIGHT_LAYER_SEGMENTS(
+    {7, 1, HSV_YELLOW}
+);
 const rgblight_segment_t* const PROGMEM my_rgb_layers[] = RGBLIGHT_LAYERS_LIST(
     micMuteLED,
-    vidMuteLED
+    vidMuteLED,
+    chatLED
 );
 
 //these are the initialization functions
@@ -156,21 +160,37 @@ debug_enable=1;
 //raw HID - connects with my node script
 void raw_hid_receive(uint8_t *data, uint8_t length) {
     if (data[1] == 0x01) {
-        rgblight_sethsv_at(0,255,255, 2);
+        // rgblight_sethsv_at(0,255,255, 2);
+        // rgblight_sethsv_at(0,255,255, 1);
         mic_Muted = 1;
-        print("Mic Muted");
-    } else if (data[1] == 0x02) { //need to add a query of which layer you are on
-        rgblight_sethsv_at(60,18,145, 2);
-        mic_Muted = 0;
-        print("Mic Unmuted");
-    } else if (data[1] == 0x03) {
-        rgblight_sethsv_at(0,255,255, 1);
         vid_Muted = 1;
-        print("Vid Muted");
-    } else if (data[1] == 0x04) {
-        rgblight_sethsv_at(60,18,145,2);
+        rgblight_set_layer_state(0, mic_Muted = 1);
+        rgblight_set_layer_state(1, vid_Muted = 1);
+        print("Mic Muted Video Stop");
+    } else if (data[1] == 0x02) { //need to add a query of which layer you are on for PC
+        // rgblight_sethsv_at(0,255,255, 2);
+        // rgblight_sethsv_at(60,18,145, 1);
+        mic_Muted = 1;
         vid_Muted = 0;
-        print("Vid Unmuted");
+        rgblight_set_layer_state(0, mic_Muted = 1);
+        rgblight_set_layer_state(1, vid_Muted = 0);
+        print("Mic Muted Video Start");
+    } else if (data[1] == 0x03) {
+        // rgblight_sethsv_at(60,18,145, 2);
+        // rgblight_sethsv_at(0,255,255, 1);
+        mic_Muted = 0;
+        vid_Muted = 1;
+        rgblight_set_layer_state(0, mic_Muted = 0);
+        rgblight_set_layer_state(1, vid_Muted = 1);
+        print("Mic Unmuted Video Stop");
+    } else if (data[1] == 0x04) {
+        // rgblight_sethsv_at(60,18,145,2);
+        // rgblight_sethsv_at(60,18,145,1);
+        mic_Muted = 0;
+        vid_Muted = 0;
+        rgblight_set_layer_state(0, mic_Muted = 0);
+        rgblight_set_layer_state(1, vid_Muted = 0);
+        print("Mic Unmuted Video Start");
     }
 }
 
@@ -278,7 +298,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         if (record->event.pressed) {
         }   else {
                 tap_code16(LSFT(LGUI(KC_W)));
-                rgblight_mode(RGBLIGHT_MODE_BREATHING);
         }
         break;
     case macGalleryLeft:
@@ -309,16 +328,18 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }   else {
                 if (mac_Full_Shift == 0) {
                     if (mac_chat_open == 0) {
-                        tap_code16(LSFT(LGUI(KC_H)));
-                        sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
-                        rgblight_set();
                         mac_chat_open = 1;
-                    } else if (mac_chat_open == 1) {
+                        rgblight_set_layer_state(2, mac_chat_open = 1);
                         tap_code16(LSFT(LGUI(KC_H)));
-                        sethsv(60,80,145, (LED_TYPE *)&led[7]);
-                        rgblight_set();
-                        mac_chat_open = 0;
-                    }
+                        // sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
+                        // rgblight_set();
+                    }   else if (mac_chat_open == 1) {
+                            mac_chat_open = 0;
+                            rgblight_set_layer_state(2, mac_chat_open = 0);
+                            tap_code16(LSFT(LGUI(KC_H)));
+                            // sethsv(60,80,145, (LED_TYPE *)&led[7]);
+                            // rgblight_set();
+                        }
                 }
                 mac_Full_Shift = 0;
             }
@@ -410,15 +431,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }   else {
                 if (win_Full_Shift == 0) {
                     if (win_chat_open == 0) {
-                        tap_code16(LALT(KC_H));
-                        sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
-                        rgblight_set();
                         win_chat_open = 1;
-                    } else if (win_chat_open == 1) {
+                        rgblight_set_layer_state(2, mac_chat_open = 1);
                         tap_code16(LALT(KC_H));
-                        sethsv(144,216,237, (LED_TYPE *)&led[7]);
-                        rgblight_set();
+                        // sethsv(HSV_YELLOW, (LED_TYPE *)&led[7]);
+                        // rgblight_set();
+                    } else if (win_chat_open == 1) {
                         win_chat_open = 0;
+                        rgblight_set_layer_state(2, mac_chat_open = 0);
+                        tap_code16(LALT(KC_H));
+                        // sethsv(144,216,237, (LED_TYPE *)&led[7]);
+                        // rgblight_set();
                     }
                 }
                 win_Full_Shift = 0;
@@ -480,14 +503,14 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
 //scans for my press and hold (screen share)...wish there was a better way, but alas
 void matrix_scan_user(void) {
-    if (mac_screen_share_press == 1 && timer_elapsed(macSSTimer) > 2000) {
+    if (mac_screen_share_press == 1 && timer_elapsed(macSSTimer) > 1500) {
         print("mac sharing");
         tap_code16(LSFT(LGUI(KC_S)));
         screen_is_sharing = 1;
         // rgblight_mode(RGBLIGHT_MODE_BREATHING);
         mac_screen_share_press = 0;
     };
-    if (win_screen_share_press == 1 && timer_elapsed(winSSTimer) > 2000) {
+    if (win_screen_share_press == 1 && timer_elapsed(winSSTimer) > 1500) {
         print("win sharing");
         tap_code16(LALT(LSFT(KC_S)));
         win_screen_share_press = 0;
