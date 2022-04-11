@@ -17,7 +17,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #pragma once
 
+
 #include "config_common.h"
+
 
 /* USB Device descriptor parameter */
 #define VENDOR_ID 0x594D // "YM"
@@ -48,6 +50,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  #define RGBLIGHT_SLEEP  /* If defined, the RGB lighting will be switched off when the host goes to sleep */
  /*== all animations enable ==*/
  #define RGBLIGHT_ANIMATIONS
+ #define RGBLIGHT_DEFAULT_MODE RGBLIGHT_MODE_STATIC_LIGHT
+ /*
+ #define RGBLIGHT_DEFAULT_HUE 60
+ #define RGBLIGHT_DEFAULT_SAT 18
+ #define RGBLIGHT_DEFAULT_VAL 145
+ */
+ #define RGBLIGHT_LAYERS
+ #define TAPPING_TERM 2000
 #endif
 
 /* Debounce reduces chatter (unintended double-presses) - set 0 if debouncing is not needed */
