@@ -6,13 +6,9 @@ This is my 9 key YMDK that I use to control Zoom.
 */
 
 #include QMK_KEYBOARD_H
-<<<<<<< HEAD
-//#include "raw_hid.h"
-=======
 #include "raw_hid.h"
 #include "print.h"
 #include "timer.h"
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
 
 #define _MAC 0
 #define _PC 1
@@ -32,35 +28,6 @@ Purple = (245,84,204)
 */
 
 enum custom_keycodes {
-<<<<<<< HEAD
-    KEY1 = SAFE_RANGE,
-    KEY2,
-    KEY3,
-    KEY4,
-    KEY5,
-    KEY6,
-    KEY7,
-    KEY8,
-    KEY9,
-    KEY10,
-    KEY11,
-    KEY12,
-    KEY13,
-    KEY14,
-    KEY15,
-    KEY16,
-    KEY17,
-    KEY18,
-    KEY19,
-    KEY20,
-    KEY21,
-    KEY22,
-    KEY23,
-    KEY24,
-    KEY25,
-    KEY26,
-    KEY27
-=======
     macMicMute = SAFE_RANGE,
     macVidMute,
     macShareScreen,
@@ -88,7 +55,6 @@ enum custom_keycodes {
     utilSeven,
     utilEight,
     flashKeeb
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
 };
 
 
@@ -101,93 +67,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                winGalleryToggle, winGalleryLeft, winGalleryRight,
                winFullscreen, winChat, winMini),
 
-<<<<<<< HEAD
-  [2] = LAYOUT(KEY19, KEY20, KEY21,
-               KEY22, KEY23, KEY24,
-               KEY25, KEY26, KEY27)
-
-};
-
-//this is the timer for flash mode sequence
-//static uint32_t key_timer = 0;
-
-
-
-
-/*
-Legend:
---Layer 0 - [Mac OS Zoom shortcuts]
-KEY1 - Mute Mic/Toggle Keyboard Light;
-KEY2 - Mute Video;
-KEY3 - Raise/Lower Hand;
-KEY4 - Speaker/Gallery View Toggle
-KEY5 - Prev Page of Gallery
-KEY6 - Next Page of Gallery
-KEY7 - Full Screen
-KEY8 - Show/Hide Chat; // If KEY7 is down, up to layer 1.
-KEY9 - Minimal Window;
-
---Layer 1 - 
-KEY10 - Mute Mic/Toggle Keyboard Light;
-KEY11 - Mute Video; // If KEY10 is down, back to layer 0
-KEY12 - Raise/Lower Hand;
-KEY13 - Speaker/Gallery View Toggle
-KEY14 - Prev Page of Gallery
-KEY15 - Next Page of Gallery
-KEY16 - Full Screen
-KEY17 - Show/Hide Chat; // If KEY7 is down, down to layer 0.
-KEY18 - Minimal Window; // If KEY7 is down, up to layer 2
-
--- Layer 2 -
-KEY19 - 
-KEY20 - 
-KEY21 - 
-KEY22 -
-KEY23 -
-KEY24 -
-KEY25 - 
-KEY26 - If KEY25 is down, back to layer 1
-KEY27 - If KEY25 && KEY26 are down, puts it in setup mode
-*/
-
-//initialize booleans for stacked functions:
-bool kp_1 = false;
-    bool kp_1a = false; //1a bounces between toggle presses
-bool kp_2 = false;
-bool kp_3 = false;
-bool kp_4 = false;
-bool kp_5 = false;
-bool kp_6 = false;
-bool kp_7 = false;
-    bool kp_7a = false;
-bool kp_8 = false;
-bool kp_9 = false;
-
-bool kp_10 = false;
-    bool kp_10a = false;
-bool kp_11 = false;
-bool kp_12 = false;
-bool kp_13 = false;
-bool kp_14 = false;
-bool kp_15 = false;
-bool kp_16 = false;
-    bool kp_16a = false;
-bool kp_17 = false;
-bool kp_18 = false;
-
-bool kp_19 = false;
-    bool kp_19a = false;
-bool kp_20 = false;
-bool kp_21 = false;
-bool kp_22 = false;
-bool kp_23 = false;
-bool kp_24 = false;
-bool kp_25 = false;
-    bool kp_25a = false;
-bool kp_26 = false;
-bool kp_27 = false;
-
-=======
   [_UTIL] = LAYOUT(utilOne, utilTwo, utilThree,
                utilFour, utilFive, utilSix,
                utilSeven, utilEight, flashKeeb)
@@ -371,25 +250,11 @@ static uint16_t macSSTimer;
 static uint16_t winSSTimer;
 
 //custom keys
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
 ///////////mac layer/////////////////////////////////////
     case macMicMute: //Mic Mute
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_1 = true;
-        } else {
-            kp_1 = false;
-            if (kp_1a == false) {  
-                kp_1a = true;       
-                tap_code16(LSFT(LGUI(KC_A)));                            
-                rgblight_setrgb(RGB_RED);
-            }   else if (kp_1a == true) {
-                    kp_1a = false;
-                    tap_code16(LSFT(LGUI(KC_A)));
-                    rgblight_setrgb(RGB_ORANGE);
-=======
         } else {
             if (mic_Muted == 0) {
                 mic_Muted = 1;
@@ -399,19 +264,11 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     mic_Muted = 0;
                     rgblight_set_layer_state(0, mic_Muted = 0);
                     tap_code16(LSFT(LGUI(KC_A)));
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
                 };
         };
         break;
     case macVidMute: // Video Mute
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_2 = true;
-        }   else {
-                tap_code16(LSFT(LGUI(KC_V)));
-                kp_2 = false;
-        }
-=======
         } else {
             if (vid_Muted == 0) {
                 vid_Muted = 1;
@@ -423,16 +280,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 tap_code16(LSFT(LGUI(KC_V)));
             };
         };
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case macShareScreen:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_3 = true;
-        }   else {
-                tap_code16(LALT(KC_Y));
-                kp_3 = false;
-=======
             macSSTimer = timer_read();
             mac_screen_share_press = 1; //matrix scan is listening for these events
         } else {
@@ -442,53 +292,22 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             //     screen_is_sharing = 0;
             //     rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT);
             // }
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         }
         return false;
     case macGalleryToggle:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_4 = true;
         }   else {
                 tap_code16(LSFT(LGUI(KC_W)));
-                kp_4 = false;
-=======
-        }   else {
-                tap_code16(LSFT(LGUI(KC_W)));
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         }
         break;
     case macGalleryLeft:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_5 = true;
         }   else {
                 tap_code16(LCTL(KC_P));
-                kp_5 = false;
-=======
-        }   else {
-                tap_code16(LCTL(KC_P));
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         }
         break;
     case macGalleryRight:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_6 = true;
-        }   else {
-                tap_code16(LCTL(KC_N));
-                kp_6 = false;
-        }
-        break;
-    case KEY7:
-        if (record->event.pressed) {           
-            kp_7 = true;
-        }   else { 
-                kp_7 = false;           
-                if (kp_7a == false) {
-                    tap_code16(LSFT(LGUI(KC_F)));
-                }
-=======
         }   else {
                 tap_code16(LCTL(KC_N));
         }
@@ -502,17 +321,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     mac_Full_Shift = 0;
                 };
                 mac_Full_Shift = 0;
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
             }
         break;
     case macChat:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_8 = true;
-        }   else {
-                kp_8 = false;
-                tap_code16(LSFT(LGUI(KC_H)));                
-=======
         }   else {
                 if (mac_Full_Shift == 0) {
                     if (mac_chat_open == 0) {
@@ -530,7 +342,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                         }
                 }
                 mac_Full_Shift = 0;
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
             }
         break;
     case macMini:
@@ -548,18 +359,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 ///////////windows layer/////////////////////////////////////
     case winMicMute:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_9 = true;
-            if (kp_7) {
-                layer_move(1);
-                kp_7a = true;
-            }    
-        }   else {
-                kp_9 = false;
-                kp_7a = false;
-                SEND_STRING(SS_LSFT(SS_LGUI("m"))); 
-            }
-=======
         } else {
             if (mic_Muted == 0) {
                 mic_Muted = 1;
@@ -571,7 +370,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                     tap_code16(LALT(KC_A));
                 };
         };
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case winVidMute:
         if (record->event.pressed) {
@@ -592,46 +390,17 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             win_screen_share_press = 1; //matrix scan is listening for these events
             winSSTimer = timer_read();
         }   else {
-<<<<<<< HEAD
-                kp_10 = false;
-                if (kp_10a == false) {        
-                    tap_code16(LALT(KC_A));          
-                    rgblight_setrgb(RGB_RED);
-                    kp_10a = true;     
-                }   else if (kp_10a == true) {
-                        tap_code16(LALT(KC_A));
-                        rgblight_setrgb(RGB_YELLOW);
-                        kp_10a = false;
-                    };
-            };         
-=======
 
                 }
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case winGalleryToggle:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_11 = true;       
-        }   else {
-                kp_11 = false;
-                tap_code16(LALT(KC_V));
-            }
-=======
             }   else {
                     tap_code16(LALT(KC_F2));
                 }
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case winGalleryLeft:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_12 = true;
-            }   else {
-                    kp_12 = false;
-                    tap_code16(LALT(KC_Y));
-                }
-=======
             }   else {
                     tap_code(KC_PGDOWN);
                 }
@@ -652,17 +421,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 };
                 win_Full_Shift = 0;
             };
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case winChat:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_13 = true;
-            }   else {
-                    kp_13 = false;
-                    tap_code16(LALT(KC_F2));
-                }
-=======
             if (win_Full_Shift == 1) {
                 layer_move(_MAC);
                 mac_Full_Shift = 1;
@@ -685,35 +446,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
                 }
                 win_Full_Shift = 0;
             }
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case winMini:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_14 = true;
-            }   else {
-                    kp_14 = false;
-                    tap_code(KC_PGUP);
-                }
-        break;   
-    case KEY15:
-        if (record->event.pressed) {
-            kp_15 = true;
-            }   else {
-                    kp_15 = false;
-                    tap_code16(KC_PGDOWN);
-                }
-        break;
-    case KEY16:
-        if (record->event.pressed) {           
-            kp_16 = true;
-        }   else {
-                kp_16 = false;
-                if (kp_16a == false) {
-                  tap_code16(LALT(KC_F));  
-                }   
-            };
-=======
             if (win_Full_Shift) {
                 layer_move(_UTIL);
             }
@@ -740,108 +475,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         }   else {
             flash_two = 0;
         }
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         break;
     case utilEight:
         if (record->event.pressed) {
-<<<<<<< HEAD
-            kp_17 = true;
-            if (kp_16) {
-                layer_move(0);
-                kp_16a = true;
-            }   
-        }   else {    
-                kp_17 = false;
-                kp_16a = false;            
-                tap_code16(LALT(KC_H));
-            }
-        break;
-    case KEY18:
-        if (record->event.pressed) {
-            kp_18 = true;
-            if (kp_16) {
-                layer_move(2);
-                kp_16a = true;
-            }
-        }   else {
-                kp_18 = false;
-                kp_16a = false;
-            }
-        break;
-    case KEY19:
-        if (record->event.pressed) {
-            kp_19 = true;
-        }   else {
-            kp_19 = false;
-        }
-        break;
-    case KEY20:
-        if (record->event.pressed) {
-            kp_20 = true;             
-        } else {
-            kp_20 = false;
-        }
-        break;
-    case KEY21:
-        if (record->event.pressed) {
-            kp_21 = true;
-        }   else {
-                kp_21 = false;
-            }
-        break;
-    case KEY22:
-        if (record->event.pressed) {
-            kp_22 = true;
-        }   else {
-                kp_22 = false;
-            }
-        break;
-    case KEY23:
-        if (record->event.pressed) {
-            kp_23 = true;
-        }   else {
-                kp_23 = false;
-            }
-        break;
-    case KEY24:
-        if (record->event.pressed) {
-            kp_24 = true;
-        }   else {
-            kp_24 = false;
-        }
-        break;
-    case KEY25:
-        if (record->event.pressed) {
-            kp_25 = true;
-        }   else {
-            kp_25 = false;
-            /*if (kp_25a == false) {
-                //put command here if you think of one
-            }*/
-        }
-        break;
-    case KEY26:
-        if (record->event.pressed) {
-            kp_26 = true;
-            if (kp_25) {
-                layer_move(1);
-                kp_25a = true;
-            }
-        }   else {
-            kp_26 = false;
-            kp_25a = false;
-            }
-        break;
-    case KEY27:
-        if (record->event.pressed) {
-            kp_27 = true;
-            if (kp_25 && kp_26) {
-                rgblight_setrgb(RGB_WHITE);
-                reset_keyboard();
-            }
-       }   else {
-            kp_27 = false;
-=======
             if (flash_two) {
                 layer_move(_PC);
                 win_Full_Shift = 1;
@@ -859,54 +495,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             }
        }   else {
             kp_27 = 0;
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
         }
         break;
     }
     return true;
 };
 
-<<<<<<< HEAD
-
-//for when I use rawHID to add feedback:
-void raw_hid_receive(uint8_t *data, uint8_t length) {
-}
-
-
-//these are the initialization functions
-void keyboard_post_init_user(void) {
-  // Call the post init code.
-  rgblight_enable_noeeprom(); // enables Rgb, without saving settings
-  rgblight_setrgb(RGB_ORANGE);
-  rgblight_mode_noeeprom(RGBLIGHT_MODE_STATIC_LIGHT); 
-  set_single_persistent_default_layer(0); 
-}
-
-//RGB control for layers
-layer_state_t layer_state_set_user(layer_state_t state) {
-    switch (get_highest_layer(state)) {
-        default:
-            if (kp_1a) {
-                rgblight_setrgb(RGB_RED);
-            }   else {
-                rgblight_setrgb(RGB_ORANGE);
-            };
-        break;
-        case 1:
-            if (kp_10a) {
-                rgblight_setrgb(RGB_RED); 
-            }   else {
-                rgblight_setrgb(RGB_YELLOW);
-            }
-        break;
-    case 2:
-        rgblight_setrgb(RGB_GREEN);
-        break;
-    }
-return state;    
-}
-
-=======
 //scans for my press and hold (screen share)...wish there was a better way, but alas
 void matrix_scan_user(void) {
     if (mac_screen_share_press == 1 && timer_elapsed(macSSTimer) > 1500) {
@@ -922,4 +516,3 @@ void matrix_scan_user(void) {
         win_screen_share_press = 0;
     }
 };
->>>>>>> 548249dc0fa0c96ff4254367aadfa3e36835635f
